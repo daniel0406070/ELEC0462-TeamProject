@@ -3,8 +3,10 @@
 #include "typeracer.h"
 
 extern char* word;
-extern int playerCount;
+extern int player_count;
 extern player players[]; 
+
+char last_word[BUF_SIZE]; //마지막으로 인식한 word 저장용 array
 
 int left_edge = 5;
 int right_edge = 35;
@@ -21,6 +23,10 @@ void *displayScreen(){
 	int r, c;
 	char* line;
 	while(1) {
+		//if word is not updated -> don't update the screen
+		if(strcmp(word, last_word) == 0)
+			continue;
+
 		//set row col
 		r = top_row;
 		c = left_edge;
@@ -29,7 +35,7 @@ void *displayScreen(){
 		clear();
 		
 		//display palyers
-		for(int i = 0; i < playerCount; i++) {
+		for(int i = 0; i < player_count; i++) {
 			//get player to string in "<player name>: <score>" form
 			line = toStringPlayer(players[i]);
 
@@ -47,6 +53,11 @@ void *displayScreen(){
 		move(r, c);
 		addstr(line);
 		
+		//move down 2 row and print target word
+		r += 2;
+		move(r, c);
+		addstr(word);
+		
 		//move to bot_row - 5
 		r = bot_row - 5;
 		move(r, c);
@@ -57,6 +68,9 @@ void *displayScreen(){
 		//move nextline
 		r++;
 		move(r, c);
+
+		//update word
+		strcpy(last_word, word);
 	}
 }
 

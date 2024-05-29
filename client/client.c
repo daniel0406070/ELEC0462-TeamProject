@@ -7,10 +7,6 @@
 
 #include "typeracer.h"
 
-void *send_msg(void *arg);
-void *recv_msg(void *arg);
-void error_handling(char *msg);
-
 // 채팅창에 보여질 이름의 형태
 char name[NAME_SIZE] = "[DEFAULT]"; // 본인 닉네임 20자 제한
 char msg[BUF_SIZE];
@@ -23,6 +19,9 @@ int main(int argc, char *argv[]) {
 	// 송신 쓰레드와 수신 쓰레드로 총 2개의 쓰레드 선언
 	// 내 메세지를 보내야하고, 상대방의 메세지도 받아야 한다.
 	pthread_t snd_thread, rcv_thread;
+	
+	//화면 update용 쓰레드 생성
+	pthread_t display_thread;
 	
 	// pthread_join 에 사용된다.
 	void *thread_return;
@@ -48,14 +47,18 @@ int main(int argc, char *argv[]) {
 	// 두 개의 쓰레드 생성하고, 각각의 main 은 send_msg, recv_meg
 	pthread_create(&snd_thread, NULL, send_msg, (void *)&sock);
 	pthread_create(&rcv_thread, NULL, recv_msg, (void *)&sock);
-  
+	
+	//디스플레이 쓰레드 생성
+	pthread_create(&display_thread, NULL, displayScreen, NULL);
+
 	// 쓰레드 종료 대기 및 소멸 유도
 	pthread_join(snd_thread, &thread_return);
 	pthread_join(rcv_thread, &thread_return);
-
+	pthread_join(display_thread, &thread_return);
   
 	// 클라이언트 연결 종료
 	close(sock);
+
 	return 0;
 }
 
@@ -121,4 +124,10 @@ void error_handling(char *msg) {
 	fputc('\n', stderr);
 	
 	exit(1);
+}
+
+void parseMassage(char* input) {
+	//서버에서 보낸 데이터를 parsing 후 저장
+	
+	return;
 }

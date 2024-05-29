@@ -22,6 +22,8 @@ typedef struct client_message {
     char content[CONTENT_SIZE];
 } client_message;
 
+void* displayScreen();
+
 // -- Server Settings --
 #define BROADCAST 1
 
