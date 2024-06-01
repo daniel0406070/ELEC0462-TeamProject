@@ -41,10 +41,12 @@ void displayInGame();
 char* toStringPlayer(player p);
 char* getSpliter(char elem, int left, int right);
 
+int pid;
+
 int main(int argc, char* argv[]) {
 	int sock;
 	struct sockaddr_in serv_addr;
-
+	
 	pthread_t snd_thread, rcv_thread;
 
 	void *thread_return;
@@ -54,6 +56,8 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
+	pid = getpid();
+
 	sprintf(name, "[%s]", argv[3]);
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
@@ -61,14 +65,18 @@ int main(int argc, char* argv[]) {
 	serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
 	serv_addr.sin_port = htons(atoi(argv[2]));
 	
+	initscr();
+
 	//signal 발생시 화면 갱신
 	signal(SIGALRM, displayInGame);
 	
+	kill(0, SIGALRM);
+
 	/*
 	 * 서버한테 이름 전송 후 답변 기다림
 	 * start 신호 기다림
 	 */
-	setupGame(sock);
+	//setupGame(sock);
 	
 	//스레드 생성 메세지 송/수신용
 	pthread_create(&snd_thread, NULL, send_msg, (void *)&sock);
@@ -188,6 +196,7 @@ void displayInGame() {
 	
 	//move next line
 	r++;
+	refresh();
 }
 
 char* toStringPlayer(player p) {
