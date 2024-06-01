@@ -6,7 +6,7 @@
 #define BUF_SIZE 100
 #define NAME_SIZE 20
 
-typedef struct palyer {
+typedef struct player {
 	int score;
 	char name[NAME_SIZE];
 } player;
@@ -21,8 +21,6 @@ typedef struct client_message {
     client_message_type type;
     char content[CONTENT_SIZE];
 } client_message;
-
-void* displayScreen();
 
 // -- Server Settings --
 #define BROADCAST 1
