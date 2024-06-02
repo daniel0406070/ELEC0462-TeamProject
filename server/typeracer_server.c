@@ -11,6 +11,7 @@
 #define BUFFER_SIZE 128
 #define NAME_SIZE 100
 #define PORT 20528
+#define TEST 1
 
 void *handle_clnt(void *arg);
 void handle_error(char *msg);
@@ -86,6 +87,7 @@ void *handle_clnt(void *arg) {
     int str_len = 0;
     char msg[BUFFER_SIZE];
     while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0) {
+        if(TEST) printf("%s\n", msg);
         received_msg(clnt_sock, msg, str_len);
     }
     pthread_mutex_lock(&mutex);
@@ -113,6 +115,13 @@ int get_client_id(int client) {
 void received_msg(int client, char *raw_message, int len) {
     client_message message = parse_to_client_msg(raw_message);
     int client_id = get_client_id(client);
+
+    if(TEST){
+        printf("client_id: %d\n", client_id);
+        printf("client_message: %s\n", message.content);
+        printf("client_message_type: %d\n", message.type);
+    }
+
     if(message.type == JOIN) {
         strcpy(name[client_id], message.content);
         server_message message;
@@ -134,7 +143,9 @@ void received_msg(int client, char *raw_message, int len) {
 void send_msg(server_message message, int len) {
     pthread_mutex_lock(&mutex);
     parse_server_msg(message, msg);
+    printf("msg: %s\n", msg);
     for (int i = 0; i < player_count; i++) {
+        printf("send to %d\n", players[i]);
         write(players[i], msg, len);
     }
     pthread_mutex_unlock(&mutex);
@@ -164,6 +175,11 @@ void scan_words() {
 }
 
 int ready_game() {
+    if(TEST){
+        printf("player_count: %d\n", player_count);
+        printf("state: %d\n", state);
+    }
+
     if (player_count < 1) return 0;
     if (state == PLAYING) return 0;
     game_round = 0;
@@ -174,6 +190,8 @@ int ready_game() {
 }
 
 void start_game() {
+    if(TEST) printf("Game Start\n");
+
     state = PLAYING;
     server_message message;
     message.type = BROADCAST;
