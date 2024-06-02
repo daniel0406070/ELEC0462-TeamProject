@@ -1,8 +1,14 @@
-client_exe: typeracer.h client_exe.c communicateServer.h communicateServer.o displayScreen.h displayScreen.o
-	gcc -o client_exe typeracer.h client_exe.c communicateServer.h communicateServer.o displayScreen.h displayScreen.o
+client: client.c client.h com.o display.o msgctr.o
+	gcc -o client client.c client.h com.o display.o msgctr.o -lncurses -lpthread
 
-communicateServer.o: communicateServer.h communicateServer.c
-	gcc -o communicateServer.o communicateServer.h communicateServer.c
+com.o: com.c com.h totalset.h typectr.h
+	gcc -c com.c com.h totalset.h typectr.h
 
-displayScreen.o: displayScreen.h displayScreen.c
-	gcc -o displayScreen.o displayScreen.h displayScreen.c -lcurses
+display.o: display.c display.h totalset.h typectr.h
+	gcc -c display.c display.h totalset.h typectr.h -lncurses
+
+msgctr.o: msgctr.c msgctr.h totalset.h typectr.h
+	gcc -c msgctr.c msgctr.h totalset.h typectr.h -c
+
+clean:
+	rm -f client com.o display.o msgctr.o display.h.gch com.h.gch msgctr.h.gch totalset.h.gch typectr.h.gch
