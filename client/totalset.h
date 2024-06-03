@@ -15,6 +15,9 @@
 #define START 2
 #define TYPING 3
 
+#define START_GAME	"start game"
+#define END_GAME	"end game"
+
 // -- Server Settings --
 #define BROADCAST 1
 

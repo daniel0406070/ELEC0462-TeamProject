@@ -10,8 +10,7 @@
 
 #include "client.h"
 
-#define START_GAME	"start game"
-#define END_GAME	"end game"
+#define TEST 1
 
 //used in thread
 char msg[BUFSIZ];
@@ -60,27 +59,32 @@ int main(int argc, char* argv[]) {
 	if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
 	    error_handling("connect() error");
 	
-	client_message client_msg;
-	client_msg.type = JOIN;
-	strcpy(client_msg.content, name);
+	
+	if(TEST){
+		client_message client_msg;
+		client_msg.type = JOIN;
+		strcpy(client_msg.content, name);
 
-	parse_client_msg(client_msg, msg);
-	printf("name: %s\n", name);
-	printf("msg: %s\n", msg);
-	write(sock, msg, strlen(msg));
+		parse_client_msg(client_msg, msg);
+		printf("name: %s\n", name);
+		printf("msg: %s\n", msg);
+		write(sock, msg, strlen(msg));
 
-	server_message server_msg;
+		server_message server_msg;
 
-	int str_len;
-	while((str_len = read(sock, buffer, BUFSIZ))!=0) {
-	    server_msg = parse_to_server_msg(buffer);
-	    
-	    printf("read\n");
-	    printf("server_msg_type: %d\n", server_msg.type);
-	    printf("server_msg_content: %s\n", server_msg.content);
+		int str_len;
+		while((str_len = read(sock, buffer, BUFSIZ))!=0) {
+			server_msg = parse_to_server_msg(buffer);
+			
+			printf("read\n");
+			printf("server_msg_type: %d\n", server_msg.type);
+			printf("server_msg_content: %s\n", server_msg.content);
 
+		}
+		printf("finish read\n");
 	}
-	printf("finish read\n");
+
+
 	/*
 	 * 서버한테 이름 전송 후 답변 기다림
 	 * start 신호 기다림
