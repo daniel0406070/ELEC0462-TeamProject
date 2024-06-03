@@ -94,14 +94,14 @@ void *recv_msg(void *arg) {
         server_message message = parse_to_server_msg(raw_msg);
         if (message.type == BROADCAST) {
             printf("%s", message.content);
-        } else if (message.type == JOIN) {
+        } else if (message.type == ADDPLAYER) {
             printf("%s has joined the game.\n", message.content);
         } else if (message.type == WRONG) {
             printf("%s\n", message.content);
         } else if (message.type == CORRECT) {
             printf("%s\n", message.content);
         } else if (message.type == GAMEEND) {
-            printf("[TypeRacer] 게임이 종료되었습니다!");
+            printf("[TypeRacer] 게임이 종료되었습니다!\n");
             printf("승리:\n");
             printf("%s\n", message.content);
         }
