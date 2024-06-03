@@ -14,6 +14,7 @@
 #define PORT 20528
 #define TEST 1
 
+void round_alrm(int sig);
 void *handle_clnt(void *arg);
 void handle_error(char *msg);
 void scan_words();
@@ -42,6 +43,7 @@ int word_size = 0;
 char presenting_words[128][BUFFER_SIZE];
 
 int main(int argc, char *argv[]) {
+    signal(SIGALRM, round_alrm);
     int serv_sock, clnt_sock;
     struct sockaddr_in serv_adr, clnt_adr;
     int clnt_adr_sz;
@@ -277,7 +279,6 @@ int ready_game() {
 
 void start_game() {
     if(TEST) printf("Game Start\n");
-    signal(SIGALRM, round_alrm);
     state = PLAYING;
     server_message message;
     message.type = BROADCAST;
