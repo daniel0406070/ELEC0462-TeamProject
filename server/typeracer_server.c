@@ -35,7 +35,7 @@ int player_count = 0;
 int players[MAX_PLAYER];
 int points[MAX_PLAYER] = { 0 };
 char name[MAX_PLAYER][NAME_SIZE] = { 0 };
-char msg[BUFFER_SIZE];
+char temp_msg[BUFFER_SIZE];
 char sentence[BUFFER_SIZE];
 pthread_mutex_t mutex;
 
@@ -147,25 +147,25 @@ void received_msg(int client, char *raw_message, int len) {
 
 void send_msg(server_message message) {
     pthread_mutex_lock(&mutex);
-    parse_server_msg(message, msg);
-    printf("[%d] msg: %s\n", msg[0], msg);
+    parse_server_msg(message, temp_msg);
+    printf("[%d] msg: %s\n", temp_msg[0], temp_msg);
 
-    int len = strlen(msg);
+    int len = strlen(temp_msg);
     for (int i = 0; i < player_count; i++) {
         printf("send to %s\n\n", name[i]);
-        write(players[i], msg, len);
+        write(players[i], temp_msg, len);
     }
     pthread_mutex_unlock(&mutex);
 }
 
 void send_msg_to(int client_id, server_message message) {
     pthread_mutex_lock(&mutex);
-    parse_server_msg(message, msg);
-    printf("[%d] msg: %s\n", msg[0], msg);
+    parse_server_msg(message, temp_msg);
+    printf("[%d] msg: %s\n", temp_msg[0], temp_msg);
 
-    int len = strlen(msg);
+    int len = strlen(temp_msg);
     printf("send to %s\n\n", name[client_id]);
-    write(players[client_id], msg, len);
+    write(players[client_id], temp_msg, len);
     pthread_mutex_unlock(&mutex);
 }
 
@@ -202,7 +202,7 @@ void next_round() {
     server_message message;
     message.type = BROADCAST;
     char buffer[BUFFER_SIZE];
-    sprintf(buffer, "[TypeRacer] : 아래 문장을 입력하세요!\n%s", sentence);
+    sprintf(buffer, "[TypeRacer] : 문장을 입력하세요! [%s]\n", sentence);
     strcpy(message.content, buffer);
     send_msg(message);
 }
@@ -213,24 +213,26 @@ void round_alrm(int sig) {
 }
 
 void on_type(int client_id, char *input_sentence) {
-    int len = strlen(input_sentence);
+    int len = strlen(sentence);
     server_message message;
-    if (len < 2) {
+    if (len == 0) {
         message.type = WRONG;
         strcpy(message.content, "게임 진행 중이 아닙니다.");
         send_msg_to(client_id, message);
         return;
     }
     else {
-         for (int i = 0; i < len; i++) {
+         for (int i = 0; i <= len; i++) {
             if (input_sentence[i] == '\n') {
                 input_sentence[i] = '\0';
                 break;
             }
         }
-        input_sentence[len] = '\0';
+        input_sentence[len + 1] = '\0';
         input_sentence=input_sentence+1;
     }
+    printf("a: %s\n", sentence);
+    printf("b: %s\n", input_sentence);
     if (strcmp(sentence, input_sentence) == 0) {
         pthread_mutex_lock(&mutex);
         points[client_id] += 1;
@@ -241,13 +243,12 @@ void on_type(int client_id, char *input_sentence) {
 
         server_message message2;
         message2.type = BROADCAST;
-        sprintf(message2.content, "[TypeRacer] %s님이 제일 먼저 문장을 입력했습니다.\n잠시 뒤 다음 라운드 시작", name[client_id]);
+        sprintf(message2.content, "[TypeRacer] %s님이 제일 먼저 문장을 입력했습니다.\n", name[client_id]);
         send_msg(message2);
-
-        server_message message3;
-        message3.type = POINT;
-        strcpy(message3.content, name[client_id]);
-        send_msg(message3);
+        if (game_round != ROUND) {
+            sprintf(message2.content, "[TypeRacer] 잠시 뒤 [%d] 라운드 시작.\n", game_round + 1);
+            send_msg(message2);
+        }
 
         strcpy(sentence, "");
         alarm(3);
@@ -277,7 +278,7 @@ void start_game() {
     state = PLAYING;
     server_message message;
     message.type = BROADCAST;
-    strcpy(message.content, "[TypeRacer] : 3초 뒤 게임을 시작합니다..");
+    strcpy(message.content, "[TypeRacer] : 3초 뒤 게임을 시작합니다..\n");
     send_msg(message);
     alarm(3);
 }
@@ -294,7 +295,7 @@ void end_game() {
     state = READY;
     server_message message;
     message.type = GAMEEND;
-    sprintf(message.content, "%s %d", name[winner], max);
+    sprintf(message.content, "%s: %d 포인트\n", name[winner], max);
     send_msg(message);
 }
 
