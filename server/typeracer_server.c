@@ -131,6 +131,11 @@ void received_msg(int client, char *raw_message, int len) {
         message.type = BROADCAST;
         sprintf(message.content, "[%s] has joined a game", name[client_id]);
         send_msg(message);
+
+        server_message message2;
+        message.type = ADDPLAYER;
+        strcpy(message2.content, name[client_id]);
+        send_msg(message2);
         return;
     }
     else if (message.type == START) {
@@ -235,6 +240,11 @@ void on_type(int client_id, char *input_sentence) {
         message2.type = BROADCAST;
         sprintf(message2.content, "[TypeRacer] %s님이 제일 먼저 문장을 입력습니다.\n잠시 뒤 다음 라운드 시작", name[client_id]);
         send_msg(message2);
+
+        server_message message3;
+        message3.type = POINT;
+        strcpy(message3.content, name[client_id]);
+        send_msg(message3);
         alarm(5);
     }
 }

@@ -26,6 +26,7 @@ client_message parse_to_client_msg(char *msg);
 #define CORRECT 3
 #define POINT 4
 #define GAMEEND 5
+#define ADDPLAYER 6
 
 // -- Game State
 #define READY 0
