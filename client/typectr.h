@@ -26,6 +26,8 @@ typedef struct server_message {
 // Thread argument
 typedef struct thread_arg {
 	int sock;
-	char name[NAME_SIZE];
+	int* state;
+	
+	int* command; //0 == idle, 1 is something
 	char* msg;
-}thread_arg; 
+}thread_arg;

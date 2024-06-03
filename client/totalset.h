@@ -21,6 +21,7 @@
 #define CORRECT	  3
 #define POINT	  4
 #define GAMEEND	  5
+
 // -- Game State
 #define READY 	0
 #define PLAYING 1
@@ -30,3 +31,6 @@
 #define RIGHT_EDGE 	35
 #define TOP_ROW 	5
 #define BOT_ROW 	55
+
+#define IN_GAME	1
+#define RESULT	2
