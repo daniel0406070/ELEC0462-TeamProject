@@ -130,14 +130,9 @@ void received_msg(int client, char *raw_message, int len) {
     if(message.type == JOIN) {
         strcpy(name[client_id], message.content);
         server_message message;
-        message.type = BROADCAST;
-        sprintf(message.content, "[%s] has joined a game", name[client_id]);
+        message.type = ADDPLAYER;
+        strcpy(message.content, name[client_id]);
         send_msg(message);
-
-        server_message message2;
-        message2.type = ADDPLAYER;
-        strcpy(message2.content, name[client_id]);
-        send_msg(message2);
         return;
     }
     else if (message.type == START) {
