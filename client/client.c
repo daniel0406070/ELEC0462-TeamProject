@@ -31,7 +31,7 @@ server_message server_msg;
 
 char name[NAME_SIZE];
 
-char buffer[CONTENT_SIZE];
+char buffer[BUFSIZ];
 char word[CONTENT_SIZE];
 
 int display_state = IDLE;
@@ -193,7 +193,8 @@ void setupGame(int sock) {
 
 	int str_len;
 	while(1) {
-		str_len = read(sock, buffer, CONTENT_SIZE);
+		str_len = read(sock, buffer, BUFSIZ-5);
+		
 		printf("%d", str_len);
 
 		server_msg = parse_to_server_msg(buffer);
