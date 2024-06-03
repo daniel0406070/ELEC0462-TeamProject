@@ -29,7 +29,7 @@ int pid;
 
 int main(int argc, char* argv[]) {
 	int sock;
-    thread_arg args;
+	thread_arg args;
 	struct sockaddr_in serv_addr;
 	
 	pthread_t send_thread, recive_thread;
@@ -57,32 +57,32 @@ int main(int argc, char* argv[]) {
 	
 	kill(0, SIGALRM);
 
-    sock = socket(PF_INET, SOCK_STREAM, 0);
-    if(sock == -1)
-        error_handling("socket() error");
-    
-    if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
-        error_handling("connect() error");
-    
-    client_message client_msg;
-    client_msg.type = START;
-    strcpy(client_msg.content, name);
+	sock = socket(PF_INET, SOCK_STREAM, 0);
+	if(sock == -1)
+	    error_handling("socket() error");
+	
+	if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+	    error_handling("connect() error");
+	
+	client_message client_msg;
+	client_msg.type = START;
+	strcpy(client_msg.content, name);
 
-    parse_client_msg(client_msg, msg);
-    printf("name: %s\n", name);
-    printf("msg: %s\n", msg);
-    write(sock, msg, strlen(msg));
+	parse_client_msg(client_msg, msg);
+	printf("name: %s\n", name);
+	printf("msg: %s\n", msg);
+	write(sock, msg, strlen(msg));
 
-    server_message server_msg;
-    while(1) {
-        printf("read\n");
-        read(sock, buffer, BUFSIZ);
-        server_msg = parse_to_server_msg(buffer);
-        
-        printf("server_msg: %d\n", server_msg.type);
-        printf("server_msg: %s\n", server_msg.content);
+	server_message server_msg;
+	while(1) {
+	    printf("read\n");
+	    read(sock, buffer, BUFSIZ);
+	    server_msg = parse_to_server_msg(buffer);
+	    
+	    printf("server_msg: %d\n", server_msg.type);
+	    printf("server_msg: %s\n", server_msg.content);
 
-    }
+	}
 
 
 
@@ -93,9 +93,9 @@ int main(int argc, char* argv[]) {
 	//setupGame(sock);
 	
 	//스레드 생성 메세지 송/수신용
-    args.sock = sock;
-    args.msg = msg;
-    strcpy(args.name, name);
+	args.sock = sock;
+	args.msg = msg;
+	strcpy(args.name, name);
 
 	pthread_create(&send_thread, NULL, send_msg, (void *)&args);
 	pthread_create(&recive_thread, NULL, recv_msg, (void *)&args);

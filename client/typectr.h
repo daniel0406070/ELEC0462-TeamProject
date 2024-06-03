@@ -11,21 +11,21 @@ typedef struct player {
 
 typedef int client_message_type;
 typedef struct client_message {
-    client_message_type type;
-    char content[CONTENT_SIZE];
+	client_message_type type;
+	char content[CONTENT_SIZE];
 } client_message;
 
 
 typedef int server_state;
 typedef int server_message_type;
 typedef struct server_message {
-    server_message_type type;
-    char content[CONTENT_SIZE];
+	server_message_type type;
+	char content[CONTENT_SIZE];
 } server_message;
 
 // Thread argument
 typedef struct thread_arg {
 	int sock;
 	char name[NAME_SIZE];
-    char* msg;
+	char* msg;
 }thread_arg; 
