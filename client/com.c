@@ -8,16 +8,16 @@
 
 #include "com.h"
 
+extern int is_send;
 
 void *send_msg(void* arg) {
 	thread_arg *args = (thread_arg *)arg;
-
 	
 	int sock = args->sock;
-	char name[NAME_SIZE];
-	strcpy(name, args->name);
+	//char name[NAME_SIZE];
+	//strcpy(name, args->name);
 
-	char name_msg[BUFSIZ];
+	char buf[BUFSIZ];
 	while(1) {
 		fgets(args->msg, BUFSIZ, stdin);
 		
@@ -25,10 +25,9 @@ void *send_msg(void* arg) {
 			close(sock);
 			exit(0);
 		}
-
-		sprintf(name_msg, "%s %s", name, args->msg);
-
-		write(sock, name_msg, strlen(name_msg));
+		//send message 
+		sprintf(buf, "%d%s", TYPING, args->msg);
+		write(sock, buf, strlen(buf));
 	}
 	return NULL;
 }
@@ -37,8 +36,6 @@ void *recv_msg(void* arg) {
 	thread_arg *args = (thread_arg *)arg;
 
 	int sock = args->sock;
-	char name_msg[BUFSIZ];
-
 	int str_len;
 	
 	while(1) {
@@ -49,9 +46,8 @@ void *recv_msg(void* arg) {
 
 		name_msg[str_len] = '\0';
 
-		/*
-		 * 이러쿵 저러쿵
-		 */
+		//generate sigalarm
+		kill(0, SIGALRM);
 	}
 	return NULL;
 }

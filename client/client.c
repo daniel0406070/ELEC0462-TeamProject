@@ -13,10 +13,15 @@
 #define TEST 1
 
 //used in thread
-char msg[BUFSIZ];
+char send_msg[CONTENT_SIZE];
+char recv_msg[CONTENT_SIZE];
 
+//use in here
 player players[MAX_PLAYER]; 
 int player_count;
+
+client_message client_msg;
+server_message server_msg;
 
 char buffer[BUFSIZ];
 char name[NAME_SIZE];
@@ -44,11 +49,9 @@ int main(int argc, char* argv[]) {
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
 	serv_addr.sin_port = htons(atoi(argv[2]));
-	
-	// initscr();
 
 	//signal 발생시 화면 갱신 player* players, int player_count, char* word
-	signal(SIGALRM, displayInGame); 
+	signal(SIGALRM, sigalarm_handler); 
 	
 	//kill(0, SIGALRM);
 
@@ -89,7 +92,7 @@ int main(int argc, char* argv[]) {
 	 * 서버한테 이름 전송 후 답변 기다림
 	 * start 신호 기다림
 	 */
-	//setupGame(sock);
+	setupGame(sock);
 	
 	//스레드 생성 메세지 송/수신용
 	args.sock = sock;
@@ -98,6 +101,10 @@ int main(int argc, char* argv[]) {
 
 	pthread_create(&send_thread, NULL, send_msg, (void *)&args);
 	pthread_create(&recive_thread, NULL, recv_msg, (void *)&args);
+	
+	while(1) {
+		fgets(buffer, ,stdin);
+	}
 
 	pthread_join(send_thread, &thread_return);
 	pthread_join(recive_thread, &thread_return);
@@ -105,6 +112,11 @@ int main(int argc, char* argv[]) {
 	close(sock);
 	
 	return 0;
+}
+
+void sigalarm_handler() {
+	server_msg = parse_to_server_msg(msg);
+	displayInGame();
 }
 
 void error_handling(char* msg) {
