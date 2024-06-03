@@ -155,7 +155,7 @@ void send_msg(server_message message) {
 
     int len = strlen(msg);
     for (int i = 0; i < player_count; i++) {
-        printf("send to %s\n", name[i]);
+        printf("send to %s\n\n", name[i]);
         write(players[i], msg, len);
     }
     pthread_mutex_unlock(&mutex);
@@ -167,7 +167,7 @@ void send_msg_to(int client_id, server_message message) {
     printf("msg: %s\n", msg);
 
     int len = strlen(msg);
-    printf("send to %s\n", name[client_id]);
+    printf("send to %s\n\n", name[client_id]);
     write(players[client_id], msg, len);
     pthread_mutex_unlock(&mutex);
 }
@@ -264,7 +264,7 @@ void on_type(int client_id, char *input_sentence) {
 int ready_game() {
     if(TEST){
         printf("player_count: %d\n", player_count);
-        printf("state: %d\n", state);
+        printf("state: %d\n\n", state);
     }
     if (player_count < 1) return 0;
     if (state == PLAYING) return 0;
