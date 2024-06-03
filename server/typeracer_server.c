@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <signal.h>
 #define BUFFER_SIZE 128
 #define NAME_SIZE 100
 #define PORT 20528
@@ -34,6 +35,7 @@ int players[MAX_PLAYER];
 int points[MAX_PLAYER] = { 0 };
 char name[MAX_PLAYER][NAME_SIZE] = { 0 };
 char msg[BUFFER_SIZE];
+char sentence[BUFFER_SIZE];
 pthread_mutex_t mutex;
 
 int word_size = 0;
@@ -49,6 +51,7 @@ int main(int argc, char *argv[]) {
     socklen_t optlen;
     
     scan_words();
+    srand(time(NULL));
     pthread_mutex_init(&mutex, NULL);
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
 
@@ -176,12 +179,35 @@ void scan_words() {
     fclose(file); 
 }
 
+void next_round() {
+    game_round += 1;
+    if (game_round > ROUND) {
+        end_game();
+        return;
+    }
+    strcpy(sentence, pick_random_words());
+    server_message message;
+    message.type = BROADCAST;
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "[TypeRacer] : 아래 문장을 입력하세요!\n%s", sentence);
+    strcpy(message.content, buffer);
+    send_msg(message);
+}
+
+void round_alrm(int sig) {
+    if (sig != SIGALRM) return;
+    next_round();
+}
+
+void on_type(int client_id, char *sentence) {
+
+}
+
 int ready_game() {
     if(TEST){
         printf("player_count: %d\n", player_count);
         printf("state: %d\n", state);
     }
-
     if (player_count < 1) return 0;
     if (state == PLAYING) return 0;
     game_round = 0;
@@ -193,7 +219,7 @@ int ready_game() {
 
 void start_game() {
     if(TEST) printf("Game Start\n");
-
+    signal(SIGALRM, round_alrm);
     state = PLAYING;
     server_message message;
     message.type = BROADCAST;
@@ -203,6 +229,10 @@ void start_game() {
 
 void end_game() {
     state = READY;
+    server_message message;
+    message.type = BROADCAST;
+    strcpy(message.content, "[TypeRacer] : 라운드가 끝나 게임이 종료되었습니다.");
+    send_msg(message);
 }
 
 void handle_error(char *msg) {

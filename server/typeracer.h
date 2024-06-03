@@ -3,7 +3,7 @@
 
 // -- Default Game Settings --
 #define MAX_PLAYER 4
-#define ROUND 5
+#define ROUND 10
 #define CONTENT_SIZE 128
 
 // -- Client Settings --
@@ -22,6 +22,10 @@ client_message parse_to_client_msg(char *msg);
 
 // -- Server Settings --
 #define BROADCAST 1
+#define WRONG 2
+#define CORRECT 3
+#define POINT 4
+#define GAMEEND 5
 
 // -- Game State
 #define READY 0
