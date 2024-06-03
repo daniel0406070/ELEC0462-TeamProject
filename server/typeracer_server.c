@@ -278,12 +278,12 @@ int ready_game() {
 void start_game() {
     if(TEST) printf("Game Start\n");
     signal(SIGALRM, round_alrm);
-    alarm(3);
     state = PLAYING;
     server_message message;
     message.type = BROADCAST;
     strcpy(message.content, "[TypeRacer] : 3초 뒤 게임을 시작합니다..");
     send_msg(message);
+    alarm(3);
 }
 
 void end_game() {
