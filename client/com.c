@@ -11,7 +11,7 @@
 
 void *send_msg(void* arg) {
 	thread_arg *args = (thread_arg *)arg;
-	
+
 	int sock = args->sock;
 	while(*(args->state)) {
 		if(*(args->command) == 0)
@@ -29,7 +29,7 @@ void *send_msg(void* arg) {
 
 void *recv_msg(void* arg) {
 	thread_arg *args = (thread_arg *)arg;
-
+	
 	int sock = args->sock;
 	int str_len;
 

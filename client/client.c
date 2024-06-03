@@ -31,8 +31,8 @@ server_message server_msg;
 
 char name[NAME_SIZE];
 
-char buffer[BUFSIZ];
-char word[BUFSIZ];
+char buffer[CONTENT_SIZE];
+char word[CONTENT_SIZE];
 
 int display_state = IDLE;
 int connect_state = 1;
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
 	serv_addr.sin_port = htons(atoi(argv[2]));
-
+	
 	sock = socket(PF_INET, SOCK_STREAM, 0);
 	if(sock == -1)
 	    error_handling("socket() error");
@@ -130,6 +130,8 @@ int main(int argc, char* argv[]) {
 		
 		parse_client_msg(client_msg, send_buffer);
 		do_send = 1;
+
+		break;
 	}
 	close(sock);
 	
@@ -188,16 +190,17 @@ void setupGame(int sock) {
 	//파싱후 전송
 	parse_client_msg(client_msg, send_buffer);
 	write(sock, send_buffer, strlen(send_buffer));
-	
+
 	int str_len;
 	while(1) {
-		str_len = read(sock, recv_buffer, CONTENT_SIZE);
-		
-		server_msg = parse_to_server_msg(recv_buffer);
+		str_len = read(sock, buffer, CONTENT_SIZE);
+		printf("%d", str_len);
 
+		server_msg = parse_to_server_msg(buffer);
+		
 		if(!strcmp(server_msg.content, "start"))
 			break;
-
+		
 		printf("%s님이 접속하셨습니다.", server_msg.content);
 		players[player_count++] = get_player(server_msg.content);
 	}
@@ -205,9 +208,8 @@ void setupGame(int sock) {
 	
 	initscr();
 	
-	/*
-	kill(0, SIGALRM);
-	*/
+	
+	//kill(0, SIGALRM);
 }
 
 player get_player(char* name) {
