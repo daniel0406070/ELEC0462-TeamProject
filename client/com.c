@@ -14,15 +14,22 @@ void *send_msg(void* arg) {
 
 	int sock = args->sock;
 	while(*(args->state)) {
+
+		/*
 		if(*(args->command) == 0)
 			continue;
 		else if(*(args->command) == -1) {
 			close(sock);
 			exit(0);
-		}
+		}*/
+		fgets(args->msg, CONTENT_SIZE, stdin);
+		
+		if(!strcmp(args->msg, "q\n"))
+			break;
+
 		write(sock, args->msg, strlen(args->msg));
 		
-		*(args->command) = 0;
+		//*(args->command) = 0;
 	}
 	return NULL;
 }
@@ -40,6 +47,8 @@ void *recv_msg(void* arg) {
 			return (void *) -1;
 
 		args->msg[str_len] = '\0';
+		
+		//*(args->command) = 1;
 
 		//generate sigalarm
 		kill(0, SIGALRM);

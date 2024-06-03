@@ -71,32 +71,6 @@ int main(int argc, char* argv[]) {
 	    error_handling("connect() error");
 	
 	/*
-	if(TEST){
-		client_message client_msg;
-		client_msg.type = JOIN;
-		strcpy(client_msg.content, name);
-
-		parse_client_msg(client_msg, msg);
-		printf("name: %s\n", name);
-		printf("msg: %s\n", msg);
-		write(sock, msg, strlen(msg));
-
-		server_message server_msg;
-
-		int str_len;
-		while((str_len = read(sock, buffer, BUFSIZ))!=0) {
-			server_msg = parse_to_server_msg(buffer);
-		
-			printf("read\n");
-			printf("server_msg_type: %d\n", server_msg.type);
-			printf("server_msg_content: %s\n", server_msg.content);
-
-		}
-		printf("finish read\n");
-	}
-	*/
-
-	/*
 	 * 서버한테 이름 전송 후 답변 기다림
 	 * start 신호 기다림
 	 */
@@ -121,6 +95,7 @@ int main(int argc, char* argv[]) {
 	pthread_create(&send_thread, NULL, send_msg, (void *)&send_args);
 	pthread_create(&recive_thread, NULL, recv_msg, (void *)&recv_args);
 	
+	/*
 	//유저 입력 받음
 	while(1) {
 		fgets(buffer, CONTENT_SIZE, stdin);
@@ -129,10 +104,16 @@ int main(int argc, char* argv[]) {
 		strcpy(client_msg.content, buffer);
 		
 		parse_client_msg(client_msg, send_buffer);
-		do_send = 1;
 
-		break;
+		if(!strcmp(buffer, "q\n") || !strcmp(buffer, "Q\n"))
+			break;
 	}
+	*/
+	//kill(0, SIGALRM);
+	
+	pthread_join(send_thread, &thread_return);
+	pthread_join(recive_thread, &thread_return);
+
 	close(sock);
 	
 	return 0;
@@ -140,9 +121,9 @@ int main(int argc, char* argv[]) {
 
 //서버에서 메세지가 왔을때
 void sigalarm_handler() {
+	/*
 	server_msg = parse_to_server_msg(recv_buffer);
 	char display_msg[CONTENT_SIZE];
-	/*
 	switch(server_msg.type) {
 		case 1: 
 			strcpy(display_msg, server_msg.content); 
@@ -172,7 +153,6 @@ void sigalarm_handler() {
 		case 2: displayResult(); break;
 	}
 	*/
-
 	display_state = IDLE;
 }
 
@@ -193,24 +173,20 @@ void setupGame(int sock) {
 
 	int str_len;
 	while(1) {
-		str_len = read(sock, buffer, BUFSIZ-5);
-		
-		printf("%d", str_len);
-
+		str_len = read(sock, buffer, CONTENT_SIZE);
 		server_msg = parse_to_server_msg(buffer);
 		
-		if(!strcmp(server_msg.content, "start"))
-			break;
+		printf("read\n");
+		printf("server_msg_type: %d\n", server_msg.type);
+		printf("server_msg_content: %s\n", server_msg.content);
 		
-		printf("%s님이 접속하셨습니다.", server_msg.content);
-		players[player_count++] = get_player(server_msg.content);
+		if(!strcmp(server_msg.content, "start")) {
+			break;
+		}
 	}
 	display_state = INGAME;
 	
 	initscr();
-	
-	
-	//kill(0, SIGALRM);
 }
 
 player get_player(char* name) {
