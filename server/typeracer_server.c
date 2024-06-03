@@ -17,7 +17,7 @@ void *handle_clnt(void *arg);
 void handle_error(char *msg);
 void scan_words();
 char *pick_random_words();
-void send_msg(server_message message, int len);
+void send_msg(server_message message);
 void received_msg(int client, char *raw_message, int len);
 
 
@@ -127,7 +127,7 @@ void received_msg(int client, char *raw_message, int len) {
         server_message message;
         message.type = BROADCAST;
         sprintf(message.content, "[%s] has joined a game", name[client_id]);
-        send_msg(message, len);
+        send_msg(message);
         return;
     }
     else if (message.type == START) {
@@ -140,10 +140,12 @@ void received_msg(int client, char *raw_message, int len) {
     }
 }
 
-void send_msg(server_message message, int len) {
+void send_msg(server_message message) {
     pthread_mutex_lock(&mutex);
     parse_server_msg(message, msg);
     printf("msg: %s\n", msg);
+
+    int len = strlen(msg);
     for (int i = 0; i < player_count; i++) {
         printf("send to %d\n", players[i]);
         write(players[i], msg, len);
@@ -196,7 +198,7 @@ void start_game() {
     server_message message;
     message.type = BROADCAST;
     strcpy(message.content, "[TypeRacer] : 5초 뒤 게임을 시작합니다..");
-    send_msg(message, sizeof(msg));
+    send_msg(message);
 }
 
 void end_game() {

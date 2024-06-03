@@ -70,8 +70,9 @@ int main(int argc, char* argv[]) {
 	write(sock, msg, strlen(msg));
 
 	server_message server_msg;
-	while(1) {
-	    read(sock, buffer, BUFSIZ);
+
+	int str_len;
+	while((str_len = read(sock, buffer, BUFSIZ))!=0) {
 	    server_msg = parse_to_server_msg(buffer);
 	    
 	    printf("read\n");
@@ -79,7 +80,7 @@ int main(int argc, char* argv[]) {
 	    printf("server_msg_content: %s\n", server_msg.content);
 
 	}
-
+	printf("finish read\n");
 	/*
 	 * 서버한테 이름 전송 후 답변 기다림
 	 * start 신호 기다림
