@@ -238,7 +238,7 @@ void on_type(int client_id, char *input_sentence) {
 
         server_message message2;
         message2.type = BROADCAST;
-        sprintf(message2.content, "[TypeRacer] %s님이 제일 먼저 문장을 입력습니다.\n잠시 뒤 다음 라운드 시작", name[client_id]);
+        sprintf(message2.content, "[TypeRacer] %s님이 제일 먼저 문장을 입력했습니다.\n잠시 뒤 다음 라운드 시작", name[client_id]);
         send_msg(message2);
 
         server_message message3;
