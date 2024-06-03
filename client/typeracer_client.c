@@ -1,11 +1,11 @@
 #include "typeracer.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <pthread.h>
+#include <stdlib.h>
 
 #define BUFFER_SIZE 256
 #define NAME_SIZE 20
@@ -28,23 +28,17 @@ int main(int argc, char *argv[]) {
         printf("Usage : %s <IP> <port> <name>\n", argv[0]);
         exit(1);
     }
-
     sprintf(name, "[%s]", argv[3]);
-
     sock = socket(PF_INET, SOCK_STREAM, 0);
-
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
     serv_addr.sin_port = htons(atoi(argv[2]));
-
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1) {
-        handle_error("connect() error");
+        handle_error("connect error");
     }
-
-    pthread_create(&snd_thread, NULL, send_msg, (void *)&sock);
     pthread_create(&rcv_thread, NULL, recv_msg, (void *)&sock);
-
+    pthread_create(&snd_thread, NULL, send_msg, (void *)&sock);
     pthread_join(snd_thread, &thread_return);
     pthread_join(rcv_thread, &thread_return);
     close(sock);
