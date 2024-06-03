@@ -9,7 +9,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 256
 #define NAME_SIZE 100
 #define PORT 20528
 #define TEST 1
@@ -39,7 +39,7 @@ char sentence[BUFFER_SIZE];
 pthread_mutex_t mutex;
 
 int word_size = 0;
-char presenting_words[BUFFER_SIZE][BUFFER_SIZE];
+char presenting_words[128][BUFFER_SIZE];
 
 int main(int argc, char *argv[]) {
     int serv_sock, clnt_sock;

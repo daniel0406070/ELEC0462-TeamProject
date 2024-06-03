@@ -4,7 +4,7 @@
 // -- Default Game Settings --
 #define MAX_PLAYER 4
 #define ROUND 10
-#define CONTENT_SIZE 128
+#define CONTENT_SIZE 256
 
 // -- Client Settings --
 #define JOIN 1
