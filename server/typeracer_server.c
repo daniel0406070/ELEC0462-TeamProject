@@ -155,7 +155,7 @@ void send_msg(server_message message) {
 
     int len = strlen(msg);
     for (int i = 0; i < player_count; i++) {
-        printf("send to %d\n", players[i]);
+        printf("send to %s\n", name[i]);
         write(players[i], msg, len);
     }
     pthread_mutex_unlock(&mutex);
@@ -167,7 +167,7 @@ void send_msg_to(int client_id, server_message message) {
     printf("msg: %s\n", msg);
 
     int len = strlen(msg);
-    printf("send to %d\n", players[client_id]);
+    printf("send to %s\n", name[client_id]);
     write(players[client_id], msg, len);
     pthread_mutex_unlock(&mutex);
 }
@@ -218,17 +218,23 @@ void round_alrm(int sig) {
 void on_type(int client_id, char *input_sentence) {
     int len = strlen(input_sentence);
     server_message message;
-    if (len == 0) {
+    if (len < 2) {
         message.type = WRONG;
         strcpy(message.content, "게임 진행 중이 아닙니다.");
         send_msg_to(client_id, message);
         return;
     }
+    else {
+         for (int i = 0; i < len; i++) {
+            if (input_sentence[i] == '\n') {
+                input_sentence[i] = '\0';
+                break;
+            }
+        }
+        input_sentence[len] = '\0';
+        input_sentence=input_sentence+1;
+    }
     if (strcmp(sentence, input_sentence) == 0) {
-        message.type = WRONG;
-        strcpy(message.content, "문장을 잘못 입력했습니다.");
-        send_msg_to(client_id, message);
-    } else {
         pthread_mutex_lock(&mutex);
         points[client_id] += 1;
         pthread_mutex_unlock(&mutex);
@@ -245,7 +251,13 @@ void on_type(int client_id, char *input_sentence) {
         message3.type = POINT;
         strcpy(message3.content, name[client_id]);
         send_msg(message3);
-        alarm(5);
+
+        strcpy(sentence, "");
+        alarm(3);
+    } else {
+        message.type = WRONG;
+        strcpy(message.content, "문장을 잘못 입력했습니다.");
+        send_msg_to(client_id, message);
     }
 }
 
@@ -266,12 +278,12 @@ int ready_game() {
 void start_game() {
     if(TEST) printf("Game Start\n");
     signal(SIGALRM, round_alrm);
+    alarm(3);
     state = PLAYING;
     server_message message;
     message.type = BROADCAST;
-    strcpy(message.content, "[TypeRacer] : 5초 뒤 게임을 시작합니다..");
+    strcpy(message.content, "[TypeRacer] : 3초 뒤 게임을 시작합니다..");
     send_msg(message);
-    alarm(5);
 }
 
 void end_game() {
