@@ -8,7 +8,7 @@
 >   -   `./client <IP> <port> <name>`
 > - ### server
 >   -   `make`
->   -   `.typeracer_server`
+>   -   `./typeracer_server`
 
 ## 게임 방법
 접속 후 채팅창에 'start' 입력 시 3초 후 게임이 시작된다.
