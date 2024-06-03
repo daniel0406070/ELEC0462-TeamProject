@@ -135,7 +135,7 @@ void received_msg(int client, char *raw_message, int len) {
         send_msg(message);
 
         server_message message2;
-        message.type = ADDPLAYER;
+        message2.type = ADDPLAYER;
         strcpy(message2.content, name[client_id]);
         send_msg(message2);
         return;
@@ -153,7 +153,7 @@ void received_msg(int client, char *raw_message, int len) {
 void send_msg(server_message message) {
     pthread_mutex_lock(&mutex);
     parse_server_msg(message, msg);
-    printf("msg: %s\n", msg);
+    printf("[%d] msg: %s\n", msg[0], msg);
 
     int len = strlen(msg);
     for (int i = 0; i < player_count; i++) {
@@ -166,7 +166,7 @@ void send_msg(server_message message) {
 void send_msg_to(int client_id, server_message message) {
     pthread_mutex_lock(&mutex);
     parse_server_msg(message, msg);
-    printf("msg: %s\n", msg);
+    printf("[%d] msg: %s\n", msg[0], msg);
 
     int len = strlen(msg);
     printf("send to %s\n\n", name[client_id]);
