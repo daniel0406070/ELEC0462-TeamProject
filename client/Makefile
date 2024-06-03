@@ -1,3 +1,7 @@
+.PHONY: clean
+
+RM = rm -f
+
 client: client.c client.h com.o display.o msgctr.o
 	gcc -o client client.c client.h com.o display.o msgctr.o -lncurses -lpthread
 
@@ -11,4 +15,4 @@ msgctr.o: msgctr.c msgctr.h totalset.h typectr.h
 	gcc -c msgctr.c msgctr.h totalset.h typectr.h -c
 
 clean:
-	rm -f client com.o display.o msgctr.o display.h.gch com.h.gch msgctr.h.gch totalset.h.gch typectr.h.gch
+	$(RM) *.o *.gch

@@ -13,19 +13,18 @@
 #define START_GAME	"start game"
 #define END_GAME	"end game"
 
+//used in thread
+char msg[BUFSIZ];
+
 player players[MAX_PLAYER]; 
 int player_count;
 
 char buffer[BUFSIZ];
-char msg[BUFSIZ];
 char name[NAME_SIZE];
 char word[BUFSIZ];
 
 void setupGame(int);
 void error_handling(char*);
-
-int pid;
-
 
 int main(int argc, char* argv[]) {
 	int sock;
@@ -40,10 +39,7 @@ int main(int argc, char* argv[]) {
 		printf("Usage: %s <IP> <port> <name>\n", argv[0]);
 		exit(1);
 	}
-
-	pid = getpid();
-
-	sprintf(name, "[%s]", argv[3]);
+	strcpy(name, argv[3]);
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
@@ -55,7 +51,7 @@ int main(int argc, char* argv[]) {
 	//signal 발생시 화면 갱신 player* players, int player_count, char* word
 	signal(SIGALRM, displayInGame); 
 	
-	kill(0, SIGALRM);
+	//kill(0, SIGALRM);
 
 	sock = socket(PF_INET, SOCK_STREAM, 0);
 	if(sock == -1)
@@ -65,7 +61,7 @@ int main(int argc, char* argv[]) {
 	    error_handling("connect() error");
 	
 	client_message client_msg;
-	client_msg.type = START;
+	client_msg.type = JOIN;
 	strcpy(client_msg.content, name);
 
 	parse_client_msg(client_msg, msg);
@@ -75,16 +71,14 @@ int main(int argc, char* argv[]) {
 
 	server_message server_msg;
 	while(1) {
-	    printf("read\n");
 	    read(sock, buffer, BUFSIZ);
 	    server_msg = parse_to_server_msg(buffer);
 	    
-	    printf("server_msg: %d\n", server_msg.type);
-	    printf("server_msg: %s\n", server_msg.content);
+	    printf("read\n");
+	    printf("server_msg_type: %d\n", server_msg.type);
+	    printf("server_msg_content: %s\n", server_msg.content);
 
 	}
-
-
 
 	/*
 	 * 서버한테 이름 전송 후 답변 기다림
