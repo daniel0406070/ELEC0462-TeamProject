@@ -5,6 +5,7 @@
 > - ### client
 >   - #### server first!!
 >   -   `make`
+>   -   기본 포트 : 20528
 >   -   `./client <IP> <port> <name>`
 > - ### server
 >   -   `make`
